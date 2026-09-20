@@ -28,52 +28,51 @@ phoneInput.addEventListener('input', (event) => {
   event.target.value = formatted;
 });
 
-const formatPrice = (number) => `${Math.round(number / 10000) * 10000}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+const leadForm = document.querySelector('#lead-form');
+const leadSubmit = document.querySelector('#lead-submit');
+const formStatus = document.querySelector('#form-status');
+const formStatusTitle = document.querySelector('#form-status-title');
+const formStatusText = document.querySelector('#form-status-text');
 
-const estimateForm = document.querySelector('#estimate-form');
-const estimateResult = document.querySelector('#estimate-result');
-const estimatePrice = document.querySelector('#estimate-price');
-const telegramResult = document.querySelector('#telegram-result');
+const showFormStatus = (type, title, message) => {
+  formStatus.className = `form-status is-${type}`;
+  formStatusTitle.textContent = title;
+  formStatusText.textContent = message;
+  formStatus.hidden = false;
+  formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
 
-estimateForm.addEventListener('submit', async (event) => {
+leadForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  if (!estimateForm.reportValidity()) return;
+  if (!leadForm.reportValidity()) return;
 
-  const formData = new FormData(estimateForm);
-  const model = formData.get('model').trim();
-  const year = Number(formData.get('year'));
-  const mileage = Number(formData.get('mileage'));
-  const condition = formData.get('condition');
-  const phone = formData.get('phone');
-  const ageFactor = Math.max(.16, 1 - (currentYear - year) * .058);
-  const mileageFactor = Math.max(.58, 1 - Math.max(0, mileage - 30000) / 520000);
-  const conditionFactors = { excellent: 1, good: .91, damaged: .67, broken: .48 };
-  const modelSeed = [...model.toLowerCase()].reduce((sum, letter) => sum + letter.charCodeAt(0), 0);
-  const segmentBase = 1900000 + (modelSeed % 17) * 65000;
-  const midpoint = Math.max(120000, segmentBase * ageFactor * mileageFactor * conditionFactors[condition]);
-  const low = midpoint * .91;
-  const high = midpoint * 1.06;
+  formStatus.hidden = true;
+  leadSubmit.disabled = true;
+  leadSubmit.innerHTML = 'Отправляем…';
 
-  estimatePrice.textContent = `${formatPrice(low)}–${formatPrice(high)} ₽`;
-  estimateResult.hidden = false;
-  estimateResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-  const conditionLabels = { excellent: 'отличное', good: 'есть нюансы', damaged: 'после ДТП', broken: 'не на ходу' };
-  const leadText = `Здравствуйте! Хочу оценить автомобиль: ${model}, ${year} г., пробег ${mileage.toLocaleString('ru-RU')} км, состояние — ${conditionLabels[condition]}. Телефон: ${phone}.`;
-  telegramResult.dataset.lead = leadText;
-});
-
-telegramResult.addEventListener('click', async () => {
-  const lead = telegramResult.dataset.lead;
-  if (!lead) return;
   try {
-    await navigator.clipboard.writeText(lead);
-    const toast = document.querySelector('#toast');
-    toast.textContent = 'Данные скопированы — вставьте их в чат';
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2800);
-  } catch (_) {
-    // Переход в Telegram остаётся доступен, даже если браузер запретил буфер обмена.
+    const response = await fetch(leadForm.action, {
+      method: 'POST',
+      body: new FormData(leadForm),
+      headers: { Accept: 'application/json' },
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Не удалось отправить заявку.');
+    }
+
+    showFormStatus('success', 'Заявка отправлена', 'Спасибо! Специалист свяжется с вами в ближайшее время.');
+    leadForm.reset();
+
+    if (typeof window.ym === 'function') {
+      window.ym(112842151, 'reachGoal', 'lead_sent');
+    }
+  } catch (error) {
+    showFormStatus('error', 'Заявка не отправлена', `${error.message} Позвоните нам по номеру +7 999 528-21-57.`);
+  } finally {
+    leadSubmit.disabled = false;
+    leadSubmit.innerHTML = 'Отправить заявку <span aria-hidden="true">→</span>';
   }
 });
 

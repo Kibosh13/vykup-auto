@@ -37,7 +37,7 @@
         <img src="assets/meylan-auto-logo.svg" alt="MEYLAN АВТО" width="248" height="56">
       </a>
       <nav class="nav" id="site-nav" aria-label="Основная навигация">
-        <a href="#calculator">Оценка</a>
+        <a href="#request">Оставить заявку</a>
         <a href="#process">Как проходит</a>
         <a href="#cases">Выкупленные авто</a>
         <a href="#contacts">Контакты</a>
@@ -61,7 +61,7 @@
           <h1 id="hero-title">Выкупим ваш авто.<br><em>Деньги — сегодня.</em></h1>
           <p class="hero-lead">Назовём предварительную цену за 10 минут, бесплатно приедем на осмотр и оформим сделку на месте.</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#calculator">Рассчитать стоимость <span aria-hidden="true">↗</span></a>
+            <a class="button button-primary" href="#request">Оставить заявку <span aria-hidden="true">↗</span></a>
             <a class="button button-ghost" href="tel:+79995282157">Позвонить</a>
           </div>
           <ul class="hero-notes" aria-label="Преимущества">
@@ -78,22 +78,22 @@
       </div>
     </section>
 
-    <section class="section calculator-section" id="calculator">
+    <section class="section calculator-section" id="request">
       <div class="container calculator-grid">
         <div class="section-copy reveal">
-          <p class="kicker">Быстрая оценка</p>
-          <h2>Узнайте стоимость<br>вашего автомобиля</h2>
-          <p>Заполните четыре поля. Покажем ориентир сразу — окончательную сумму фиксируем после бесплатного осмотра.</p>
+          <p class="kicker">Заявка на выкуп</p>
+          <h2>Расскажите о своём<br>автомобиле</h2>
+          <p>Заполните четыре поля — мы свяжемся с вами и сообщим ориентировочную стоимость. Окончательную сумму зафиксируем после бесплатного осмотра.</p>
           <div class="trust-row">
             <div class="avatars" aria-hidden="true"><span>А</span><span>М</span><span>И</span></div>
             <div><strong>Оцениваем честно</strong><small>без обязательств с вашей стороны</small></div>
           </div>
         </div>
 
-        <form class="estimate-card reveal" id="estimate-form">
+        <form class="estimate-card reveal" id="lead-form" action="https://meylanavtovykup.ru/send-lead.php" method="post">
           <div class="form-head">
             <span>01</span>
-            <div><strong>Расскажите об авто</strong><small>Займёт меньше минуты</small></div>
+            <div><strong>Оставьте заявку</strong><small>Ответим в течение 10 минут</small></div>
           </div>
           <div class="field-grid">
             <label class="field field-wide">
@@ -122,16 +122,16 @@
             <span>Телефон для связи</span>
             <input id="client-phone" name="phone" type="tel" inputmode="tel" placeholder="+7 999 000-00-00" autocomplete="tel" required>
           </label>
-          <button class="button button-dark button-full" type="submit">Рассчитать стоимость <span aria-hidden="true">→</span></button>
-          <label class="consent"><input type="checkbox" required checked> <span>Согласен на обработку персональных данных</span></label>
-          <div class="estimate-result" id="estimate-result" aria-live="polite" hidden>
-            <p>Предварительный диапазон</p>
-            <strong id="estimate-price">—</strong>
-            <small>Точную цену назовём после уточнения комплектации и осмотра.</small>
-            <div class="result-actions">
-              <a id="telegram-result" href="https://t.me/vykupmeylan" target="_blank" rel="noopener">Написать в Telegram</a>
-              <a href="tel:+79995282157">Позвонить</a>
-            </div>
+          <label class="field field-wide comment-field">
+            <span>Комментарий <small>необязательно</small></span>
+            <textarea name="comment" rows="3" maxlength="700" placeholder="Комплектация, повреждения или удобное время для звонка"></textarea>
+          </label>
+          <label class="form-honeypot" aria-hidden="true">Компания<input name="company" type="text" tabindex="-1" autocomplete="off"></label>
+          <button class="button button-dark button-full" id="lead-submit" type="submit">Отправить заявку <span aria-hidden="true">→</span></button>
+          <label class="consent"><input type="checkbox" name="consent" value="yes" required checked> <span>Согласен на обработку персональных данных</span></label>
+          <div class="form-status" id="form-status" aria-live="polite" hidden>
+            <strong id="form-status-title"></strong>
+            <p id="form-status-text"></p>
           </div>
         </form>
       </div>
@@ -229,7 +229,7 @@
     <div class="container footer-bottom"><span>© 2026 MEYLAN АВТО</span><a href="privacy.html">Политика конфиденциальности</a><span>Информация на сайте не является публичной офертой</span></div>
   </footer>
 
-  <div class="mobile-cta"><a href="tel:+79995282157">Позвонить</a><a href="#calculator">Оценить авто</a></div>
+  <div class="mobile-cta"><a href="tel:+79995282157">Позвонить</a><a href="#request">Оставить заявку</a></div>
   <div class="toast" id="toast" role="status" aria-live="polite">Данные скопированы</div>
   <script src="script.js"></script>
 </body>
