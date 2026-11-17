@@ -1,6 +1,7 @@
 <?php
 
 const LEAD_RECIPIENT = '89992493135@mail.ru';
+const LEAD_SENDER = 'no-reply@meylanavtovykup.ru';
 const ALLOWED_ORIGINS = [
     'https://meylanavtovykup.ru',
     'https://www.meylanavtovykup.ru',
@@ -83,14 +84,19 @@ $message = implode("\r\n", [
 
 $subject = '=?UTF-8?B?' . base64_encode('Новая заявка — MEYLAN АВТО') . '?=';
 $headers = implode("\r\n", [
-    'From: MEYLAN AVTO <no-reply@meylanavtovykup.ru>',
-    'Reply-To: no-reply@meylanavtovykup.ru',
+    'From: MEYLAN AVTO <' . LEAD_SENDER . '>',
+    'Reply-To: ' . LEAD_SENDER,
+    'Date: ' . date(DATE_RFC2822),
+    'Message-ID: <lead.' . bin2hex(random_bytes(16)) . '@meylanavtovykup.ru>',
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8',
     'Content-Transfer-Encoding: 8bit',
 ]);
 
-if (!mail(LEAD_RECIPIENT, $subject, $message, $headers)) {
+// В ROKMERE sendmail_path по умолчанию задаёт u10033@rokmere.ru.
+// Домен rokmere.ru публикует SPF -all, поэтому задаём конверт явно.
+// Только фиксированный адрес: пользовательский ввод в параметры sendmail не попадает.
+if (!mail(LEAD_RECIPIENT, $subject, $message, $headers, '-f' . LEAD_SENDER)) {
     error_log('MEYLAN lead email could not be queued.');
     respond(500, false, 'Сервис отправки временно недоступен.');
 }
